@@ -113,4 +113,14 @@ export default class World extends BaseObject {
   update() {
     this.lineMaterial.uniforms.time.value += this.speed;
   }
+
+  dispose() {
+    this.areas.forEach((area) => {
+      area.dispose();
+    });
+    this.areas.length = 0;
+    this.areaMaterials.length = 0;
+    // @ts-ignore
+    this.lineMaterial = null;
+  }
 }

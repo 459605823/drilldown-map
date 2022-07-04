@@ -1,24 +1,17 @@
-/* eslint-disable import/no-dynamic-require */
-
-/* eslint-disable import/prefer-default-export */
-
 import * as THREE from 'three';
 import gsap from 'gsap';
 
 export const getImage = (...urls: string[]) => {
-  console.log(urls);
-  // if (urls.length > 1) {
-  //   return urls.map((url) => require(`@vis/assets/images/${url}`));
-  // }
-  // if (urls[0]) {
-  //   return require(`@vis/assets/images/${urls[0]}`);
-  // }
+  if (urls.length > 1) {
+    return urls.map((url) => require(`@vis/assets/images/${url}`));
+  }
+  return require(`@vis/assets/images/${urls[0]}`);
 };
 export const getTexture = (url: string) => {
-  return new THREE.TextureLoader().load(url);
+  return new THREE.TextureLoader().load(getImage(url));
 };
 export const getTextureAsync = (url: string) => {
-  return new THREE.TextureLoader().loadAsync(url);
+  return new THREE.TextureLoader().loadAsync(getImage(url));
 };
 
 export const fileLoader = (url: string, onError?: () => void) =>

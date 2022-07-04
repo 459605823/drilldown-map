@@ -44,6 +44,8 @@ export default class PlaneMap extends BaseObject {
 
   level: 'country' | 'province' | 'city' = 'country';
 
+  oldArea: Area | null;
+
   guiParams = {
     topMat: {
       color: {
@@ -197,7 +199,21 @@ export default class PlaneMap extends BaseObject {
 
   handleMouseMove(mouse: THREE.Vector2) {
     const newArea = this.pickArea(mouse);
-    // console.log(newArea);
+    const {oldArea} = this;
+    if (newArea) {
+      if (newArea !== oldArea) {
+        if (oldArea) {
+          oldArea.onmouseout();
+        }
+        newArea?.onmouseover();
+        this.oldArea = newArea;
+        return newArea;
+      }
+    } else if (oldArea) {
+      oldArea.onmouseout();
+      this.oldArea = null;
+      return 'out';
+    }
   }
 
   update() {
@@ -249,8 +265,8 @@ export default class PlaneMap extends BaseObject {
     Array.from(this.areaMap.keys()).forEach((area) => {
       area.dispose();
     });
-    this.allAreas = [];
-    this.areaMaterials = [];
+    this.allAreas.length = 0;
+    this.areaMaterials.length = 0;
     // @ts-ignore
     this.lineMaterial = null;
     // @ts-ignore

@@ -1,5 +1,19 @@
+/* eslint-disable import/no-unresolved */
+const AutoImport = require('unplugin-auto-import/webpack');
+
 module.exports = () => {
   return {
+    plugins: [
+      AutoImport({
+        imports: ['vue'],
+        dts: true,
+        eslintrc: {
+          enabled: true,
+          filepath: './.eslintrc-auto-import.json',
+          globalsPropValue: true,
+        },
+      }),
+    ],
     postcss: {
       plugins: [
         // [

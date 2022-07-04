@@ -39,7 +39,7 @@ export default class Ocean extends BaseObject {
 
   create() {
     const {width, height, position} = this.options;
-    const texture = getTexture(require('@vis/assets/images/grid.png'));
+    const texture = getTexture('grid.png');
     texture.wrapS = THREE.RepeatWrapping;
     texture.wrapT = THREE.RepeatWrapping;
     texture.minFilter = THREE.NearestFilter;

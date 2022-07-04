@@ -1,3 +1,5 @@
+/* eslint-disable no-restricted-syntax */
+
 import Pencil from '@q/pencil';
 import Base from '@/vis/Base';
 import {
@@ -10,8 +12,9 @@ import * as THREE from 'three';
 import {geoEquirectangular} from 'd3-geo';
 import {center as getCenter} from '@turf/turf';
 import drawController, {Materials} from './objects';
-import type {PlaneMap, Area} from './objects';
-import {animation, fileLoader} from './utils';
+import type {PlaneMap, Area, WorldBg} from './objects';
+import {animation, fileLoader, getImage} from './utils';
+import './styles/index.scss';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const projection = geoEquirectangular()
@@ -25,7 +28,9 @@ export default class extends Base {
 
   mouse = new THREE.Vector2();
 
-  map: PlaneMap;
+  map?: PlaneMap;
+
+  world?: WorldBg;
 
   mapHistory: {
     map: PlaneMap;
@@ -37,8 +42,12 @@ export default class extends Base {
 
   isAnimating = false;
 
-  emitEvent(eventName: string | symbol, args: any) {
+  emit(eventName: string | symbol, args: any) {
     this.pencil!.event.emit(eventName, args);
+  }
+
+  on(eventName: string | symbol, listener: (...args: any[]) => void) {
+    this.pencil!.event.on(eventName, listener);
   }
 
   constructor(container: HTMLElement) {
@@ -56,6 +65,7 @@ export default class extends Base {
           near: 5,
           far: 3000,
         },
+        css2DRenderer: true,
       },
       drawController
     );
@@ -87,19 +97,23 @@ export default class extends Base {
     });
     map.object3d.position.setZ(9);
     this.map = map;
-    await drawController.draw('WorldBg', {
+    this.world = await drawController.draw('WorldBg', {
       projection,
     });
     await drawController.draw('Light');
     await drawController.draw('Ocean');
-    // await drawController.draw('SpriteImage', {
-    //   position: new THREE.Vector3(130, -50, 9),
-    //   src: islandSign,
-    //   scale: 0.12,
-    // });
+    await drawController.draw('SpriteImage', {
+      position: new THREE.Vector3(130, -50, 9),
+      src: getImage('九段线.png'),
+      scale: 0.12,
+    });
     await Promise.all(drawController.objectsPromise);
     this.pencil?.start();
     this.registerEvents();
+    if (IS_DEV) {
+      // @ts-ignore
+      window.setAdcode = this.setAdcode.bind(this);
+    }
   }
 
   async animateIn() {
@@ -117,7 +131,7 @@ export default class extends Base {
       undefined,
       () => {
         this.mapHistory.push({
-          map: this.map,
+          map: this.map!,
           cameraPos: camera!.position.clone(),
           center: new THREE.Vector3(0),
         });
@@ -125,8 +139,30 @@ export default class extends Base {
     );
   }
 
+  async drawLabels() {
+    const map = this.map!;
+    await Promise.all(
+      [...map.areaMap.keys()].map((area) => {
+        const {centroid, center, name} = area.userData;
+        const [x, y] = projection(centroid || center) as [number, number];
+        const el = document.createElement('p');
+        el.className = 'map-label';
+        el.textContent = name;
+        return drawController.draw('Css2dBind', {
+          position: new THREE.Vector3(
+            x,
+            -y,
+            map.object3d.position.z + map.depth
+          ),
+          children: el,
+          key: `mapLabel-${name}`,
+        });
+      })
+    );
+  }
+
   findArea(adcode: string) {
-    const {areaMap} = this.map;
+    const {areaMap} = this.map!;
     if (areaMap) {
       const areas = [...areaMap.keys()];
       const area = areas.find((item) => adcode === `${item.userData.adcode}`);
@@ -139,11 +175,12 @@ export default class extends Base {
     if (typeof area === 'string') {
       area = this.findArea(area);
     }
-    area = area || this.map.pickArea(this.mouse);
+    area = area || this.map!.pickArea(this.mouse);
     const light = drawController.getObject('Light');
-    if (area && camera && control) {
+    if (area && camera && control && !this.isAnimating) {
       const {adcode, level, name} = area.userData;
-      if (level === 'district') return;
+      if (level === 'district' || this.isAnimating) return;
+      this.isAnimating = true;
       const res = await fileLoader(
         `${this.options.staticPath}/geojson/china/${level}/${adcode}.json`,
         () => console.log(`${name}的地图数据不存在`)
@@ -151,10 +188,10 @@ export default class extends Base {
       if (res) {
         this.adcodes.push(`${adcode}`);
         if (emitEvent) {
-          this.emitEvent('drillDown', {adcode, name, level});
+          this.emit('drillDown', {adcode, name, level});
         }
         area.hide();
-        this.map.deactive();
+        this.map!.deactive();
         const mapIndex = this.mapHistory.length;
         const {cameraPos} = this.mapHistory[mapIndex - 1];
         const geojson = JSON.parse(res as string);
@@ -163,8 +200,8 @@ export default class extends Base {
           geojson,
           level,
         });
-        map.object3d.position.setZ(this.map.object3d.position.z);
-        const {size: preSize} = this.map.getSize();
+        map.object3d.position.setZ(this.map!.object3d.position.z);
+        const {size: preSize} = this.map!.getSize();
         const {size} = map.getSize();
         const scale =
           size.x / size.y < preSize.x / preSize.y
@@ -176,12 +213,13 @@ export default class extends Base {
           number
         ];
         const newZ =
-          this.map.object3d.position.z + (level === 'province' ? 1.5 : 0.4);
+          this.map!.object3d.position.z + (level === 'province' ? 1.5 : 0.4);
         const newCenter = new THREE.Vector3(cX, -cY, newZ);
-        // this.world.speed =
-        //   level === 'country' ? 0.5 : level === 'province' ? 0.15 : 0.06;
+        this.world!.speed =
+          level === 'country' ? 0.5 : level === 'province' ? 0.15 : 0.06;
         Materials.changeLineAnimateParams(new THREE.Vector2(cX, -cY), level);
         light.group.position.copy(newCenter);
+        drawController.erase('Css2dBind');
         const dest = new THREE.Vector3().lerpVectors(
           cameraPos,
           newCenter,
@@ -201,8 +239,10 @@ export default class extends Base {
           cameraPos: camera.position.clone(),
           center: newCenter.clone(),
         });
+        this.drawLabels();
       }
     }
+    this.isAnimating = false;
   }
 
   async handleBack() {
@@ -212,7 +252,7 @@ export default class extends Base {
       this.isAnimating = true;
       this.mapHistory.pop();
       this.adcodes.pop();
-      drawController.erase(this.map);
+      drawController.erase(this.map!);
       const {map, cameraPos, center} =
         this.mapHistory[this.mapHistory.length - 1];
       const hideArea = [...map.areaMap.keys()].find((obj) => !obj.visible);
@@ -222,24 +262,59 @@ export default class extends Base {
       this.map = map;
       this.map.active();
       camera.lookAt(center);
-      // this.world.speed =
-      //   map.level === 'country' ? 0.5 : map.level === 'province' ? 0.15 : 0.06;
+      this.world!.speed =
+        map.level === 'country' ? 0.5 : map.level === 'province' ? 0.15 : 0.06;
       Materials.changeLineAnimateParams(
         new THREE.Vector2(center.x, center.y),
         map.level
       );
+      drawController.erase('Css2dBind');
       light.group.position.copy(center);
       await Promise.all([
         animation(camera.position, cameraPos),
         animation(control.target, center),
       ]);
+      this.drawLabels();
       this.isAnimating = false;
+    }
+  }
+
+  async setAdcode(adcodes: string[]) {
+    const {adcodes: preAdcodes} = this;
+    if (preAdcodes.length) {
+      const [province, city] = adcodes;
+      const [preProvince, preCity] = preAdcodes;
+      if (province !== preProvince) {
+        for await (const preAdcode of [...preAdcodes]) {
+          await this.handleBack();
+        }
+        this.adcodes = [];
+      } else {
+        if (preCity && city !== preCity) {
+          await this.handleBack();
+        }
+        if (city) {
+          const area = this.findArea(city);
+          if (area) {
+            await this.handleDrillDown(area, false);
+          }
+        }
+        return;
+      }
+    }
+    if (adcodes.length) {
+      for await (const adcode of adcodes) {
+        const area = this.findArea(adcode);
+        if (area) {
+          await this.handleDrillDown(area, false);
+        }
+      }
     }
   }
 
   handleMouseMove(e: MouseEvent) {
     this.trackMousePos(e);
-    this.map.handleMouseMove(this.mouse);
+    this.map!.handleMouseMove(this.mouse);
   }
 
   trackMousePos(e: MouseEvent) {
@@ -260,30 +335,8 @@ export default class extends Base {
       'mousemove',
       this.handleMouseMove.bind(this)
     );
-    const {camera} = this.pencil!;
-    // let hide = false;
-    // this?.addListener(this.container, 'wheel', () => {
-    //   const level = this.mapHistory.length;
-    //   const maxDis = level === 1 ? 1000 : level === 2 ? 100 : 50;
-    //   const distance = camera!.position.distanceTo(
-    //     this.mapHistory[level - 1].center
-    //   );
-    //   if (distance >= maxDis && !hide) {
-    //     hide = true;
-    //     drawController
-    //       .getAllObject('Css2dBind')
-    //       .filter((item) => item.key.includes('mapLabel'))
-    //       .forEach((item) => item.hide());
-    //   } else if (distance < maxDis && hide) {
-    //     hide = false;
-    //     drawController
-    //       .getAllObject('Css2dBind')
-    //       .filter((item) => item.key.includes('mapLabel'))
-    //       .forEach((item) => item.show());
-    //   }
-    // });
     this.addListener(this.container, 'dblclick', () => {
-      const area = this.map.pickArea(this.mouse);
+      const area = this.map!.pickArea(this.mouse);
       if (area && this.mapHistory.length < 3) {
         this.handleDrillDown(area);
       } else if (!area && this.mapHistory.length > 1) {
@@ -302,9 +355,13 @@ export default class extends Base {
   dispose() {
     Materials.disposeAllMaterials();
     this.pencil!.dispose();
+    this.map!.dispose();
+    this.world!.dispose();
 
     this.removeAllListeners();
-
+    this.map = undefined;
+    this.world = undefined;
     this.pencil = undefined;
+    this.mapHistory.length = 0;
   }
 }

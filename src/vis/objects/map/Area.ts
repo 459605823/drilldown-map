@@ -3,6 +3,7 @@ import {disposeMesh} from '@q/pencil/dist/utils';
 import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils';
 import {MeshLine, MeshLineMaterial} from '@q/pencil/dist/objects';
 import type {geoProjection} from 'd3-geo';
+import {hoverMat} from './commonMaterial';
 
 export type IProps = {
   depth: number;
@@ -12,6 +13,8 @@ export type IProps = {
   lineMaterial: MeshLineMaterial;
   [key: string]: any;
 };
+
+type Mesh = THREE.Mesh<THREE.ExtrudeBufferGeometry, THREE.Material[]>;
 
 export default class Area extends THREE.Object3D {
   _mesh: THREE.Group | undefined;
@@ -109,6 +112,18 @@ export default class Area extends THREE.Object3D {
     if (this.line) {
       this.line.visible = true;
     }
+  }
+
+  onmouseover() {
+    this.mesh?.children.forEach((child) => {
+      (child as Mesh).material = [hoverMat, hoverMat];
+    });
+  }
+
+  onmouseout() {
+    this.mesh?.children.forEach((child) => {
+      (child as Mesh).material = this.userData.areaMaterials;
+    });
   }
 
   dispose() {

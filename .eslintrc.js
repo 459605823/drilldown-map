@@ -12,5 +12,5 @@ module.exports = {
       },
     },
   },
-  extends: ['bundler'],
+  extends: ['bundler', './.eslintrc-auto-import.json'],
 };

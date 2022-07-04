@@ -1,6 +1,10 @@
 import * as THREE from 'three';
 import {MeshLineMaterial} from '@q/pencil/dist/objects';
 
+export const hoverMat = new THREE.MeshBasicMaterial({
+  color: new THREE.Color('red'),
+});
+
 export const topMat = new THREE.MeshPhongMaterial({
   color: new THREE.Color('#01233c'),
   emissive: new THREE.Color('#09374e'),
