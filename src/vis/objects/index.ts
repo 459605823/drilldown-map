@@ -1,5 +1,5 @@
 import {DrawController} from '@q/pencil';
-import {PlaneMap, WorldBg, Materials} from './map';
+import {PlaneMap, WorldBg, Materials, Area} from './map';
 import Light from './light';
 import Ocean from './ocean';
 
@@ -10,6 +10,6 @@ const objs = {
   Ocean,
 };
 
-export {Materials};
+export {Materials, PlaneMap, Area};
 
 export default new DrawController(objs);
