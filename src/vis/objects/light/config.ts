@@ -1,0 +1,52 @@
+import * as THREE from 'three';
+
+export default [
+  {
+    position: new THREE.Vector3(60, 250, 60),
+    target: new THREE.Vector3(-219, -1000, 0),
+    type: 'SpotLight',
+    color: new THREE.Color('#035768'),
+    intensity: 70,
+    distance: 290,
+    angle: 1,
+    penumbra: 1,
+    decay: 2,
+  },
+  {
+    position: new THREE.Vector3(70, 240, 60),
+    target: new THREE.Vector3(-21, -1000, 0),
+    type: 'SpotLight',
+    color: new THREE.Color('#ccedff'),
+    intensity: 45,
+    distance: 290,
+    angle: 0.31,
+    penumbra: 1,
+    decay: 1.4,
+  },
+  {
+    position: new THREE.Vector3(0, 240, 140),
+    type: 'SpotLight',
+    color: new THREE.Color('#2576a2'),
+    intensity: 20,
+    distance: 500,
+    angle: 0.75,
+    penumbra: 1,
+    decay: 2,
+  },
+  {
+    position: new THREE.Vector3(-240, -20, 100),
+    type: 'SpotLight',
+    color: new THREE.Color('#94c8ff'),
+    intensity: 1,
+    distance: 360,
+    angle: 0.52,
+    penumbra: 0.2,
+    decay: 1,
+  },
+  {
+    type: 'DirectionLight',
+    position: new THREE.Vector3(398, -100, 78),
+    color: new THREE.Color('#94c8ff'),
+    intensity: 4,
+  },
+];
