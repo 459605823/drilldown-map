@@ -313,8 +313,22 @@ export default class extends Base {
   }
 
   handleMouseMove(e: MouseEvent) {
+    const map = this.map!;
     this.trackMousePos(e);
-    this.map!.handleMouseMove(this.mouse);
+    const area = map!.handleMouseMove(this.mouse);
+    if (area && typeof area !== 'string') {
+      const [x, y] = projection(
+        area.userData.centroid || area.userData.center
+      ) as [number, number];
+      const pos = new THREE.Vector3(x, -y, map.object3d.position.z + map.depth);
+      pos.project(this.pencil!.camera!);
+      const {width, height} = this.pencil!.getSize();
+      const tx = (pos.x * 0.5 + 0.5) * width;
+      const ty = (pos.y * -0.5 + 0.5) * height;
+      this.emit('tooltip', {pos: {x: tx, y: ty}, visible: true});
+    } else if (area === 'out') {
+      this.emit('tooltip', {visible: false});
+    }
   }
 
   trackMousePos(e: MouseEvent) {
