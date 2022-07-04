@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig",
+  "compilerOptions": {
+    "noEmit": false,
+    "rootDir": "src",
+    "baseUrl": ".",
+    "outDir": "./dist",
+    "declaration": true,
+    "emitDeclarationOnly":true,
+  },
+  "include": ["src/**/*"],
+}

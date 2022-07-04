@@ -1,0 +1,20 @@
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+
+@font-face {
+  font-family: 'DINAlternate-bold';
+  src: url('~@/assets/fonts/DIN-Alternate-Bold.ttf');
+}
+@font-face {
+  font-family: 'TRENDS';
+  src: url('~@/assets/fonts/TRENDS.ttf');
+}
+@font-face {
+  font-family: 'DIN-BlackItalic';
+  src: url('~@/assets/fonts/DIN-BlackItalic.otf');
+}
+
