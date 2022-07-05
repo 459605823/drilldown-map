@@ -31,6 +31,7 @@ onMounted(() => {
   --visible: hidden;
   left: 0;
   top: 0;
+  font-size: 24px;
   transform: translate(var(--tx), var(--ty));
   visibility: var(--visible);
 }
