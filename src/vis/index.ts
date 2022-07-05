@@ -18,7 +18,7 @@ import './styles/index.scss';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const projection = geoEquirectangular()
-  .center([103.5, 34.5])
+  .center([104.0, 37.5])
   .scale(300)
   .translate([0, 0])
   .precision(0.1);
@@ -218,6 +218,7 @@ export default class extends Base {
         this.world!.speed =
           level === 'country' ? 0.5 : level === 'province' ? 0.15 : 0.06;
         Materials.changeLineAnimateParams(new THREE.Vector2(cX, -cY), level);
+        this.emit('tooltip', {visible: false});
         light.group.position.copy(newCenter);
         drawController.erase('Css2dBind');
         const dest = new THREE.Vector3().lerpVectors(
@@ -262,6 +263,7 @@ export default class extends Base {
       this.map = map;
       this.map.active();
       camera.lookAt(center);
+      this.emit('tooltip', {visible: false});
       this.world!.speed =
         map.level === 'country' ? 0.5 : map.level === 'province' ? 0.15 : 0.06;
       Materials.changeLineAnimateParams(
@@ -312,9 +314,21 @@ export default class extends Base {
     }
   }
 
-  handleMouseMove(e: MouseEvent) {
+  trackMousePos(e: MouseEvent) {
+    const {mouse, container} = this;
+    mouse.x =
+      ((e.clientX - getElementViewLeft(container)) / container.clientWidth) *
+        2 -
+      1;
+    mouse.y =
+      -((e.clientY - getElementViewTop(container)) / container.clientHeight) *
+        2 +
+      1;
+  }
+
+  handlePopWindow() {
+    if (this.isAnimating) return;
     const map = this.map!;
-    this.trackMousePos(e);
     const area = map!.handleMouseMove(this.mouse);
     if (area && typeof area !== 'string') {
       const [x, y] = projection(
@@ -331,16 +345,9 @@ export default class extends Base {
     }
   }
 
-  trackMousePos(e: MouseEvent) {
-    const {mouse, container} = this;
-    mouse.x =
-      ((e.clientX - getElementViewLeft(container)) / container.clientWidth) *
-        2 -
-      1;
-    mouse.y =
-      -((e.clientY - getElementViewTop(container)) / container.clientHeight) *
-        2 +
-      1;
+  handleMouseMove(e: MouseEvent) {
+    this.trackMousePos(e);
+    this.handlePopWindow();
   }
 
   registerEvents() {

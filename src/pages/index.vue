@@ -1,16 +1,18 @@
 <template>
   <div class="map-container">
     <div id="map-3d"></div>
-    <Popwindow ref="tooltip" />
+    <Popwindow ref="tooltip" msg="dsada" @redirect="handleRedirect" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import China from '@vis/index';
-import Popwindow from './popwindow.vue';
 
 let map: China;
 const tooltip = ref();
+const handleRedirect = (msg: string) => {
+  console.log(msg);
+};
 onMounted(async () => {
   const dom = tooltip.value.$el;
   map = new China(document.querySelector('#map-3d')!);
@@ -21,7 +23,6 @@ onMounted(async () => {
     console.log(adcode, name, level);
   });
   map.on('tooltip', ({pos, visible}) => {
-    console.log(pos, visible);
     if (pos) {
       const {x, y} = pos;
       dom.style.setProperty('--tx', `${x}px`);
@@ -36,6 +37,7 @@ onMounted(async () => {
 .map-container {
   width: 100vw;
   height: 100vh;
+  overflow: hidden;
   #map-3d {
     width: 100%;
     height: 100%;

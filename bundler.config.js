@@ -1,8 +1,12 @@
 /* eslint-disable import/no-unresolved */
 const AutoImport = require('unplugin-auto-import/webpack');
+const Components = require('unplugin-vue-components/webpack');
 
 module.exports = () => {
   return {
+    output: {
+      filename: 'index.js',
+    },
     plugins: [
       AutoImport({
         imports: ['vue'],
@@ -12,6 +16,10 @@ module.exports = () => {
           filepath: './.eslintrc-auto-import.json',
           globalsPropValue: true,
         },
+      }),
+      Components({
+        types: [],
+        dts: true,
       }),
     ],
     postcss: {
