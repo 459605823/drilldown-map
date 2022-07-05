@@ -65,6 +65,9 @@ export default class extends Base {
           near: 5,
           far: 3000,
         },
+        scene: {
+          background: new THREE.Color('#001928'),
+        },
         css2DRenderer: true,
       },
       drawController
@@ -76,7 +79,7 @@ export default class extends Base {
   setControlConfig() {
     const {camera, control} = this.pencil!;
     if (!camera || !control) return;
-    // control.zoomSpeed = 1.5;
+    control.zoomSpeed = 1;
     control.enableDamping = false;
     control.mouseButtons = {
       LEFT: THREE.MOUSE.PAN,
@@ -101,7 +104,7 @@ export default class extends Base {
       projection,
     });
     await drawController.draw('Light');
-    await drawController.draw('Ocean');
+    // await drawController.draw('Ocean');
     await drawController.draw('SpriteImage', {
       position: new THREE.Vector3(130, -50, 9),
       src: getImage('九段线.png'),
@@ -384,5 +387,6 @@ export default class extends Base {
     this.world = undefined;
     this.pencil = undefined;
     this.mapHistory.length = 0;
+    this.adcodes.length = 0;
   }
 }

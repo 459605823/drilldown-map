@@ -1,6 +1,6 @@
 <template>
   <div
-    class="popwindow absolute text-red flex items-center justify-center p-4 bg-red-200 hover:bg-purple-700 cursor-pointer"
+    class="popwindow absolute text-red text-xl flex items-center justify-center p-4 bg-red-200 hover:bg-purple-700 cursor-pointer"
     @click="handleClick">
     {{ msg }}
   </div>
@@ -19,9 +19,6 @@ const props = withDefaults(defineProps<Props>(), {
 const handleClick = () => {
   emit('redirect', props.msg);
 };
-onMounted(() => {
-  console.log(props);
-});
 </script>
 
 <style lang="scss" scoped>
@@ -31,7 +28,6 @@ onMounted(() => {
   --visible: hidden;
   left: 0;
   top: 0;
-  font-size: 24px;
   transform: translate(var(--tx), var(--ty));
   visibility: var(--visible);
 }

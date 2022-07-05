@@ -120,7 +120,6 @@ export default class World extends BaseObject {
     });
     this.areas.length = 0;
     this.areaMaterials.length = 0;
-    // @ts-ignore
-    this.lineMaterial = null;
+    this.lineMaterial = null as unknown as any;
   }
 }

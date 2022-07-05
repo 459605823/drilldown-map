@@ -38,7 +38,7 @@ export default class PlaneMap extends BaseObject {
 
   isActive = true;
 
-  depth = 4;
+  depth = 2;
 
   speed = 0.5;
 
@@ -265,13 +265,11 @@ export default class PlaneMap extends BaseObject {
     Array.from(this.areaMap.keys()).forEach((area) => {
       area.dispose();
     });
+    this.oldArea = null;
+    this.areaMap.clear();
     this.allAreas.length = 0;
     this.areaMaterials.length = 0;
-    // @ts-ignore
-    this.lineMaterial = null;
-    // @ts-ignore
-    this.areaMap = null;
-    // @ts-ignore
-    this.raycaster = null;
+    this.lineMaterial = null as unknown as any;
+    this.raycaster = null as unknown as any;
   }
 }
