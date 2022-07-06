@@ -89,4 +89,5 @@ export const disposeAllMaterials = () => {
   bgTopMat.dispose();
   bgSideMat.dispose();
   bgLineMat.dispose();
+  hoverMat.dispose();
 };

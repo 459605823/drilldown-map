@@ -305,10 +305,10 @@
     "@ant-design/colors" "^5.0.0"
     "@q/icons-svg" "^1.0.2"
 
-"@q/pencil@1.6.15":
-  version "1.6.15"
-  resolved "http://registry.npm.qiwoo.org/@q/pencil/download/@q/pencil-1.6.15.tgz#1c6bf7bb2a0615437973982850a95c82d573cb04"
-  integrity sha1-HGv3uyoGFUN5c5goUKlcgtVzywQ=
+"@q/pencil@1.6.22":
+  version "1.6.22"
+  resolved "http://registry.npm.qiwoo.org/@q/pencil/download/@q/pencil-1.6.22.tgz#a66050579d84b3dc308dc53c4d6f54a4a9c58687"
+  integrity sha1-pmBQV52Es9wwjcU8TW9UpKnFhoc=
   dependencies:
     "@turf/boolean-clockwise" "^6.5.0"
     "@turf/boolean-point-in-polygon" "^6.5"

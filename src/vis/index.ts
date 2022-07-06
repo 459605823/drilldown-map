@@ -1,4 +1,5 @@
 /* eslint-disable no-restricted-syntax */
+/* eslint-disable no-multi-assign */
 
 import Pencil from '@q/pencil';
 import Base from '@/vis/Base';
@@ -346,6 +347,57 @@ export default class extends Base {
     } else if (area === 'out') {
       this.emit('tooltip', {visible: false});
     }
+  }
+
+  createFlyPath(v0: THREE.Vector3, v3: THREE.Vector3) {
+    const {x: x1, y: y1} = v0;
+    const {x: x2, y: y2} = v3;
+    const distance = v0.distanceTo(v3);
+    let h = 40;
+    if (distance > 400) {
+      h = distance / 2.5;
+    }
+    const v1 = new THREE.Vector3(
+      x1 + (x2 - x1) * 0.25,
+      y1 + (y2 - y1) * 0.25,
+      h
+    );
+    const v2 = new THREE.Vector3(
+      x1 + (x2 - x1) * 0.75,
+      y1 + (y2 - y1) * 0.75,
+      h
+    );
+    // 三维三次贝塞尔曲线（v0起点，v1第一个控制点，v2第二个控制点，v3终点）
+    return new THREE.CubicBezierCurve3(v0, v1, v2, v3);
+  }
+
+  async drawFlylines(
+    from: {coord: [number, number]; geo: string},
+    to: {coord: [number, number]; geo: string}
+  ) {
+    const map = this.map!;
+    const world = this.world!;
+    let fromDepth = map.object3d.position.z + map.depth;
+    let toDepth = map.object3d.position.z + map.depth;
+    if (from.geo !== '中国') {
+      const area = world.findArea(from.geo);
+      if (area) {
+        fromDepth = area.userData.depth;
+      }
+    }
+    if (to.geo !== '中国') {
+      const area = world.findArea(to.geo);
+      if (area) {
+        toDepth = area.userData.depth;
+      }
+    }
+    const [x0, y0] = projection(from.coord) as [number, number];
+    const v0 = new THREE.Vector3(x0, -y0, fromDepth);
+    const [x3, y3] = projection(to.coord) as [number, number];
+    const v3 = new THREE.Vector3(x3, -y3, toDepth);
+    await drawController.draw('Flyline', {
+      nodes: this.createFlyPath(v0, v3).getPoints(500),
+    });
   }
 
   handleMouseMove(e: MouseEvent) {

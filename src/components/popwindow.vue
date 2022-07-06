@@ -1,6 +1,6 @@
 <template>
   <div
-    class="popwindow absolute text-red text-xl flex items-center justify-center p-4 bg-red-200 hover:bg-purple-700 cursor-pointer"
+    class="popwindow absolute text-red text-xl flex items-center justify-center p-4 bg-red-200 hover:bg-purple-700 cursor-pointer transition-opacity"
     @click="handleClick">
     {{ msg }}
   </div>
@@ -25,10 +25,10 @@ const handleClick = () => {
 .popwindow {
   --tx: 0px;
   --ty: 0px;
-  --visible: hidden;
+  --opacity: 0;
   left: 0;
   top: 0;
   transform: translate(var(--tx), var(--ty));
-  visibility: var(--visible);
+  opacity: var(--opacity);
 }
 </style>
