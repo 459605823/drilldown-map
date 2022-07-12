@@ -10,9 +10,13 @@ import China from '@vis/index';
 
 let map: China | undefined;
 const tooltip = ref();
+const adcodes = shallowRef([]);
 const handleRedirect = (msg: string) => {
   console.log(msg);
 };
+watch(adcodes, (newVal) => {
+  map?.setAdcode(newVal);
+});
 onMounted(async () => {
   const dom = tooltip.value.$el;
   map = new China(document.querySelector('#map-3d')!);
@@ -23,8 +27,8 @@ onMounted(async () => {
     {coord: [129.36157, 36.027428], geo: '日本'},
     {coord: [120.109913, 29.181466], geo: '中国'}
   );
-  map.on('drillDown', ({adcode, name, level}) => {
-    console.log(adcode, name, level);
+  map.on('adcodes', ({adcodes: newVal}) => {
+    adcodes.value = newVal;
   });
   map.on('tooltip', ({pos, visible}) => {
     if (pos) {

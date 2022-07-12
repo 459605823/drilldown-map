@@ -3,11 +3,7 @@
 
 import Pencil from '@q/pencil';
 import Base from '@/vis/Base';
-import {
-  makePromiseCreator,
-  getElementViewLeft,
-  getElementViewTop,
-} from '@q/pencil/dist/utils';
+import {getElementViewLeft, getElementViewTop} from '@q/pencil/dist/utils';
 import chinaGeojson from '@q/pencil/dist/geojson/china.json';
 import * as THREE from 'three';
 import {geoEquirectangular} from 'd3-geo';
@@ -174,7 +170,7 @@ export default class extends Base {
     }
   }
 
-  async handleDrillDown(area?: Area | string, emitEvent = true) {
+  async handleDrillDown(area?: Area | string) {
     const {camera, control} = this.pencil!;
     if (typeof area === 'string') {
       area = this.findArea(area);
@@ -191,9 +187,6 @@ export default class extends Base {
       );
       if (res) {
         this.adcodes.push(`${adcode}`);
-        if (emitEvent) {
-          this.emit('drillDown', {adcode, name, level});
-        }
         area.hide();
         this.map!.deactive();
         const mapIndex = this.mapHistory.length;
@@ -302,7 +295,7 @@ export default class extends Base {
         if (city) {
           const area = this.findArea(city);
           if (area) {
-            await this.handleDrillDown(area, false);
+            await this.handleDrillDown(area);
           }
         }
         return;
@@ -312,7 +305,7 @@ export default class extends Base {
       for await (const adcode of adcodes) {
         const area = this.findArea(adcode);
         if (area) {
-          await this.handleDrillDown(area, false);
+          await this.handleDrillDown(area);
         }
       }
     }
@@ -414,9 +407,13 @@ export default class extends Base {
     this.addListener(this.container, 'dblclick', () => {
       const area = this.map!.pickArea(this.mouse);
       if (area && this.mapHistory.length < 3) {
-        this.handleDrillDown(area);
+        this.emit('adcodes', {
+          adcodes: [...this.adcodes, `${area.userData.adcode}`],
+        });
       } else if (!area && this.mapHistory.length > 1) {
-        this.handleBack();
+        const adcodes = [...this.adcodes];
+        adcodes.pop();
+        this.emit('adcodes', {adcodes});
       }
     });
     if (IS_DEV) {
