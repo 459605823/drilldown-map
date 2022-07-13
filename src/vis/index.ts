@@ -8,10 +8,14 @@ import chinaGeojson from '@q/pencil/dist/geojson/china.json';
 import * as THREE from 'three';
 import {geoEquirectangular} from 'd3-geo';
 import {center as getCenter} from '@turf/turf';
-import drawController, {Materials} from './objects';
-import type {PlaneMap, Area, WorldBg} from './objects';
+import drawController, {
+  Materials,
+  type PlaneMap,
+  type Area,
+  type WorldBg,
+} from './objects';
 import {animation, fileLoader, getImage} from './utils';
-import './styles/index.scss';
+import style from './styles/index.module.scss';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const projection = geoEquirectangular()
@@ -146,7 +150,7 @@ export default class extends Base {
         const {centroid, center, name} = area.userData;
         const [x, y] = projection(centroid || center) as [number, number];
         const el = document.createElement('p');
-        el.className = 'map-label';
+        el.className = style['map-label'];
         el.textContent = name;
         return drawController.draw('Css2dBind', {
           position: new THREE.Vector3(
@@ -419,7 +423,9 @@ export default class extends Base {
     if (IS_DEV) {
       this.addListener(document.body, 'keydown', (e) => {
         if ((e as unknown as KeyboardEvent).key === 'Escape') {
-          this.handleBack();
+          const adcodes = [...this.adcodes];
+          adcodes.pop();
+          this.emit('adcodes', {adcodes});
         }
       });
     }

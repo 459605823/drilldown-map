@@ -1,20 +1,26 @@
 /* eslint-disable import/prefer-default-export */
 import {defineStore} from 'pinia';
+import AreaLevel from '@/assets/json/level.json';
 
-export type userType = {
-  token: string;
-  name: string;
-};
+interface mapState {
+  adcodes: string[];
+}
 
-export const useUserStore = defineStore({
+export const useMapStore = defineStore({
   id: 'user',
-  state: () => ({
-    userData: {token: '', name: ''},
-  }),
-
-  actions: {
-    setUserData(payload: userType) {
-      this.userData = payload;
+  state: () =>
+    ({
+      adcodes: ['1000000'],
+    } as mapState),
+  getters: {
+    areaName: (state) => {
+      const [provinceAdcode, cityAdcode] = state.adcodes;
+      const province = AreaLevel.find((item) => item.value === provinceAdcode);
+      if (cityAdcode && province?.children) {
+        return province.children.find((child) => child.value === cityAdcode)
+          ?.label;
+      }
+      return province?.label;
     },
   },
 });

@@ -1,16 +1,20 @@
 <template>
   <div class="map-container">
     <div id="map-3d"></div>
+    <FilterComp />
     <Popwindow ref="tooltip" msg="dsada" @redirect="handleRedirect" />
   </div>
 </template>
 
 <script lang="ts" setup>
 import China from '@vis/index';
+import {storeToRefs} from 'pinia';
+import {useMapStore} from '@/stores';
 
+const mapStore = useMapStore();
+const {adcodes} = storeToRefs(mapStore);
 let map: China | undefined;
 const tooltip = ref();
-const adcodes = shallowRef([]);
 const handleRedirect = (msg: string) => {
   console.log(msg);
 };

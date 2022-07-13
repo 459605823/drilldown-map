@@ -1,0 +1,63 @@
+.ant-dropdown {
+  &-content {
+    background: #00325c;
+    box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.48),
+      0 6px 16px 0 rgba(0, 0, 0, 0.32), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 2px;
+  }
+  &-menu {
+    background-color: transparent;
+    &-item {
+      font-family: PingFangSC-Regular;
+      font-size: 14px;
+      color: #cccccc;
+      line-height: 22px;
+      transition: none;
+      &:hover, &-selected {
+        background: #144e96;
+        color: #3cc5ff;
+      }
+    }
+  }
+}
+
+.ant-cascader-dropdown {
+  background: #00325c;
+  box-shadow: 0 3px 6px -4px rgba(0, 0, 0, 0.48),
+    0 6px 16px 0 rgba(0, 0, 0, 0.32), 0 9px 28px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 2px;
+
+  .ant-cascader-menu {
+    &::-webkit-scrollbar {
+      width: 2px;
+      height: 20px;
+    }
+    &::-webkit-scrollbar-thumb {
+      width: 2px;
+      height: 20px;
+      background: #1d5fb0;
+    }
+
+    font-family: PingFangSC-Regular;
+    font-size: 14px;
+    color: #cccccc;
+    letter-spacing: 0;
+    line-height: 22px;
+    font-weight: 400;
+    border-right: 1px solid #093975;
+    &-item {
+      &:hover {
+        background: #144e96;
+        color: #3cc5ff;
+      }
+      &-expand-icon {
+        font-size: 12px;
+        color: #999;
+      }
+      &.ant-cascader-menu-item-active {
+        background: #144e96;
+        color: #3cc5ff;
+      }
+    }
+  }
+}
