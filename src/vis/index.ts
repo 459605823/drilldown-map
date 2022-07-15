@@ -1,5 +1,4 @@
 /* eslint-disable no-restricted-syntax */
-/* eslint-disable no-multi-assign */
 
 import Pencil from '@q/pencil';
 import Base from '@/vis/Base';
@@ -18,10 +17,16 @@ import {animation, fileLoader, getImage} from './utils';
 import style from './styles/index.module.scss';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
+// const projection = geoEquirectangular()
+//   .center([104.0, 37.5])
+//   .scale(300)
+//   .translate([0, 0])
+//   .precision(0.1);
 const projection = geoEquirectangular()
-  .center([104.0, 37.5])
-  .scale(300)
+  .center([0, 5])
+  .scale(150)
   .translate([0, 0])
+  .rotate([-180, 0])
   .precision(0.1);
 
 export default class extends Base {

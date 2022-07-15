@@ -79,28 +79,30 @@ export default class World extends BaseObject {
 
   createAreas() {
     const {projection} = this.options;
-    worldGeojson.features.forEach((item) => {
-      const props: IProps = {
-        depth: THREE.MathUtils.randInt(2, 8),
-        projection,
-        coords: [],
-        areaMaterials: this.areaMaterials,
-        lineMaterial: this.lineMaterial,
-        ...item.properties,
-      };
-      if (!item.geometry || (!props.name && !props.NAME)) return;
-      const {type, coordinates} = item.geometry;
-      if (type === 'Polygon') {
-        props.coords.push(coordinates[0] as [number, number][]);
-      } else if (type === 'MultiPolygon') {
-        coordinates.forEach((coord) => {
-          props.coords.push(coord[0] as [number, number][]);
-        });
-      }
-      const area = new Area(props);
-      this.object3d.add(area);
-      this.areas.push(area);
-    });
+    worldGeojson.features
+      .filter((item) => item.properties.NAME !== 'Antarctica')
+      .forEach((item) => {
+        const props: IProps = {
+          depth: THREE.MathUtils.randInt(2, 8),
+          projection,
+          coords: [],
+          areaMaterials: this.areaMaterials,
+          lineMaterial: this.lineMaterial,
+          ...item.properties,
+        };
+        if (!item.geometry || (!props.name && !props.NAME)) return;
+        const {type, coordinates} = item.geometry;
+        if (type === 'Polygon') {
+          props.coords.push(coordinates[0] as [number, number][]);
+        } else if (type === 'MultiPolygon') {
+          coordinates.forEach((coord) => {
+            props.coords.push(coord[0] as [number, number][]);
+          });
+        }
+        const area = new Area(props);
+        this.object3d.add(area);
+        this.areas.push(area);
+      });
   }
 
   findArea(name: string) {
