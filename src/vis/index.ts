@@ -218,8 +218,7 @@ export default class extends Base {
           number,
           number
         ];
-        const newZ =
-          this.map!.object3d.position.z + (level === 'province' ? 1.5 : 0.4);
+        const newZ = this.map!.object3d.position.z + 1 / mapIndex;
         const newCenter = new THREE.Vector3(cX, -cY, newZ);
         this.world!.speed =
           level === 'country' ? 0.5 : level === 'province' ? 0.15 : 0.06;
@@ -322,14 +321,9 @@ export default class extends Base {
 
   trackMousePos(e: MouseEvent) {
     const {mouse, container} = this;
-    mouse.x =
-      ((e.clientX - getElementViewLeft(container)) / container.clientWidth) *
-        2 -
-      1;
-    mouse.y =
-      -((e.clientY - getElementViewTop(container)) / container.clientHeight) *
-        2 +
-      1;
+    const rect = container.getBoundingClientRect();
+    mouse.x = ((e.clientX - rect.left) / (rect.right - rect.left)) * 2 - 1;
+    mouse.y = -((e.clientY - rect.top) / (rect.bottom - rect.top)) * 2 + 1;
   }
 
   handlePopWindow() {

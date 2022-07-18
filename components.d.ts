@@ -7,6 +7,8 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    CompAHeader: typeof import('./src/components/compA/Header.vue')['default']
+    CompBHeader: typeof import('./src/components/compB/Header.vue')['default']
     FilterComp: typeof import('./src/components/FilterComp.vue')['default']
     Popwindow: typeof import('./src/components/popwindow.vue')['default']
   }

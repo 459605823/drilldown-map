@@ -19,6 +19,7 @@ module.exports = () => {
       }),
       Components({
         types: [],
+        directoryAsNamespace: true,
         dts: true,
       }),
     ],

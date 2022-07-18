@@ -3,6 +3,8 @@
     <div id="map-3d"></div>
     <FilterComp />
     <Popwindow ref="tooltip" msg="dsada" @redirect="handleRedirect" />
+    <compA-header></compA-header>
+    <compB-header></compB-header>
   </div>
 </template>
 
