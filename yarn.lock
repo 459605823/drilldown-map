@@ -7155,10 +7155,10 @@ vue-auto-routing@^1.0.1:
   dependencies:
     vue-route-generator "^1.0.0"
 
-vue-bundler@^0.1.22:
-  version "0.1.22"
-  resolved "https://registry.npmmirror.com/vue-bundler/-/vue-bundler-0.1.22.tgz#5398e7378a8e6435cfc9ec8d36ee8bef38b31ade"
-  integrity sha512-/2BNHVMuOBBMWHIiCRwfH0MJXfiYR7TffNWakIC196DfAy7x6ccaSSiauDKXmmUYzA8GTUHONfQWYziDyHDIXw==
+vue-bundler@^0.1.30:
+  version "0.1.30"
+  resolved "https://registry.npmmirror.com/vue-bundler/-/vue-bundler-0.1.30.tgz#554524ec4704123849d4dbc9c29001fcba215bee"
+  integrity sha512-YJefkm4jQdJQquniU4ilqrNcp71Zsb1ql5daAvdpoG7lf4yisFzQH7XAsJDabx1QivejDp3zMzFUXR0od+6tKQ==
   dependencies:
     "@swc/core" "^1.2.207"
     "@swc/helpers" "^0.4.3"

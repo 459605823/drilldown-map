@@ -5,7 +5,7 @@
   "scripts": {
     "dev": "VUE_AUTO_ROUTING=true vue-bundler-dev",
     "build": "VUE_AUTO_ROUTING=true vue-bundler",
-    "build:vis": "BUILD_LIBRARY=src/vis/index vue-bundler",
+    "build:vis": "CSS_EXTRACT=false PUBLIC_EXCLUDE=geojson BUILD_LIBRARY=src/vis/index bundler",
     "tsc": "tsc -p tsconfig.prod.json && tsc-alias -p tsconfig.prod.json && copyfiles -u 1 \"src/**/*.d.ts\" dist",
     "pub": "qnpm publish"
   },
@@ -40,7 +40,7 @@
     "tsc-alias": "^1.6.4",
     "unplugin-auto-import": "^0.9.2",
     "unplugin-vue-components": "^0.21.0",
-    "vue-bundler": "^0.1.22"
+    "vue-bundler": "^0.1.30"
   },
   "dependencies": {
     "@q/pencil": "1.6.22",
