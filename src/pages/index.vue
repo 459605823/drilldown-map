@@ -3,8 +3,8 @@
     <div id="map-3d"></div>
     <FilterComp />
     <Popwindow ref="tooltip" msg="dsada" @redirect="handleRedirect" />
-    <compA-header></compA-header>
-    <compB-header></compB-header>
+    <!-- <compA-header></compA-header>
+    <compB-header></compB-header> -->
   </div>
 </template>
 
@@ -36,14 +36,14 @@ onMounted(async () => {
   map.on('adcodes', ({adcodes: newVal}) => {
     adcodes.value = newVal;
   });
-  map.on('tooltip', ({pos, visible}) => {
-    if (pos) {
-      const {x, y} = pos;
-      dom.style.setProperty('--tx', `${x}px`);
-      dom.style.setProperty('--ty', `${y}px`);
-    }
-    dom.style.setProperty('--opacity', `${visible ? 1 : 0}`);
-  });
+  // map.on('tooltip', ({pos, visible}) => {
+  //   if (pos) {
+  //     const {x, y} = pos;
+  //     dom.style.setProperty('--tx', `${x}px`);
+  //     dom.style.setProperty('--ty', `${y}px`);
+  //   }
+  //   dom.style.setProperty('--opacity', `${visible ? 1 : 0}`);
+  // });
 });
 onUnmounted(() => {
   map?.dispose();

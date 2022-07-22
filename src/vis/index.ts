@@ -2,7 +2,6 @@
 
 import Pencil from '@q/pencil';
 import Base from '@/vis/Base';
-import {getElementViewLeft, getElementViewTop} from '@q/pencil/dist/utils';
 import chinaGeojson from '@q/pencil/dist/geojson/china.json';
 import * as THREE from 'three';
 import {geoEquirectangular} from 'd3-geo';
@@ -229,13 +228,10 @@ export default class extends Base {
         const dest = new THREE.Vector3().lerpVectors(
           cameraPos,
           newCenter,
-          1 - scale - 0.08 * mapIndex
+          1 - scale - 0.04 / mapIndex
         );
         await Promise.all([
-          animation(
-            control.target,
-            newCenter.clone().add(new THREE.Vector3(0, 2, 2))
-          ),
+          animation(control.target, newCenter.clone()),
           animation(camera.position, new THREE.Vector3(cX, dest.y, dest.z)),
         ]);
         await animation(map.object3d.position, {z: newZ});
