@@ -191,7 +191,7 @@ export default class extends Base {
       if (level === 'district' || this.isAnimating) return;
       this.isAnimating = true;
       const res = await fileLoader(
-        `${this.options.staticPath}/geojson/china/${level}/${adcode}.json`,
+        `${this.options.staticPath}/geojson/${level}/${adcode}.json`,
         () => console.log(`${name}的地图数据不存在`)
       );
       if (res) {
