@@ -24,8 +24,8 @@
 
 ##### 下钻
 下钻的逻辑在`vis/index.ts`中，主要通过`handleDrillDown`和`setAdcode`这两个函数来实现，当触发下钻时通过调用`setAdcode`并传入对应的`adcodes`，该函数会将当前组件内部的`adcodes`与传入的`adcodes`进行对比，之后调用`handleDrillDown`函数，该函数会根据传入的`adcode`去找到对应的区域，根据其`userData`中保存的信息去请求该区域的geojson文件，然后创建新的`PlaneMap`组件，根据新的地图的大小和中心位置去移动摄像机和控制器的位置，之后更新`map`属性为当前`PlaneMap`组件，保证之后的交互在新的地图上进行，这样就完成了下钻。
-> 1. 注意目前`setAdcode`函数实现仅可下钻到市，下钻到市时`adcodes`也要包含对应的省`[省、市]`
-> 2. 返回到全国时传入空数组`[]`
+
+> 注意目前`setAdcode`函数实现仅可下钻到市，下钻到市时`adcodes`也要包含对应的省`[省、市]`, 返回到全国时传入空数组`[]`
 
 业务组件的`adcodes`属性保存每一级地图的区域代码，为了避免重复触发事件，`setAdcode`函数要由外部来调用，当内部触发下钻，如点击地图板块时，会根据要下钻区域的`adcode`和当前`adcodes`属性生成新的`adcodes`并通过`adcodes`事件传到外部，外部监听该事件并修改其保存的`adcodes`，同时监听`adcodes`变化，当变化时调用`setAdcode`函数进行下钻。
 每次地图变化时，都会更新`mapHistory`属性，其包含每一级地图的`PlaneMap`组件以及摄像机和控制器的位置。
