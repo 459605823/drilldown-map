@@ -1,3 +1,5 @@
+// 此灯光配置仅供参考，需要根据实际项目效果进行调整
+
 import * as THREE from 'three';
 
 export default [

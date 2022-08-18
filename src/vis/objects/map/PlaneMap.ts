@@ -21,6 +21,7 @@ interface Options {
   projection: ReturnType<typeof geoProjection>;
   geojson: FeatureCollection<Polygon | MultiPolygon>;
   level: 'country' | 'province' | 'city';
+  depth?: number;
 }
 
 export default class PlaneMap extends BaseObject {
@@ -125,6 +126,7 @@ export default class PlaneMap extends BaseObject {
     super();
     this.options = options;
     this.level = options.level;
+    this.depth = options.depth ?? this.depth;
   }
 
   create() {
@@ -228,10 +230,8 @@ export default class PlaneMap extends BaseObject {
     this.object3d.children.forEach((child) => {
       if (child instanceof Area) {
         const {level} = child.userData;
-        child.position.z =
-          level === 'province'
-            ? THREE.MathUtils.randFloat(-0.5, 0.5)
-            : THREE.MathUtils.randFloat(-0.2, 0.2);
+        const randZ = level === 'province' ? this.depth / 4 : this.depth / 10;
+        child.position.z = THREE.MathUtils.randFloat(-randZ, randZ);
         child.mesh?.children.forEach((m) => {
           (m as THREE.Mesh).material = [bgTopMat, bgSideMat];
         });

@@ -17,16 +17,10 @@ import style from './styles/index.module.scss';
 
 const IS_DEV = process.env.NODE_ENV === 'development';
 const projection = geoEquirectangular()
-  .center([104.0, 37.5])
+  .center([104.0, 34.5])
   .scale(300)
   .translate([0, 0])
   .precision(0.1);
-// const projection = geoEquirectangular()
-//   .center([0, 5])
-//   .scale(150)
-//   .translate([0, 0])
-//   .rotate([-180, 0])
-//   .precision(0.1);
 
 export default class extends Base {
   pencil?: Pencil;
@@ -67,7 +61,7 @@ export default class extends Base {
         control: true,
         light: false,
         camera: {
-          near: 5,
+          near: 1,
           far: 3000,
         },
         scene: {
@@ -91,7 +85,7 @@ export default class extends Base {
       MIDDLE: THREE.MOUSE.DOLLY,
       RIGHT: THREE.MOUSE.ROTATE,
     };
-    control.minDistance = 10;
+    control.minDistance = 0;
     control.enableRotate = IS_DEV;
     control.maxDistance = 1000;
     camera.position.set(0, -1000, 600);
@@ -189,6 +183,10 @@ export default class extends Base {
       const {adcode, level, name} = area.userData;
       if (level === 'district' || this.isAnimating) return;
       this.isAnimating = true;
+      if (this.map?.oldArea) {
+        this.map.oldArea.onmouseout();
+        this.map.oldArea = null;
+      }
       const res = await fileLoader(
         `${this.options.staticPath}/geojson/${level}/${adcode}.json`,
         () => console.log(`${name}的地图数据不存在`)
@@ -210,15 +208,16 @@ export default class extends Base {
         const {size} = map.getSize();
         const scale =
           size.x / size.y < preSize.x / preSize.y
-            ? size.x / preSize.x
-            : size.y / preSize.y;
+            ? size.y / preSize.y
+            : size.x / preSize.x;
         const absoluteCenter = getCenter(geojson).geometry.coordinates;
         const [cX, cY] = projection(absoluteCenter as [number, number]) as [
           number,
           number
         ];
-        const newZ = this.map!.object3d.position.z + 1 / mapIndex;
-        const newCenter = new THREE.Vector3(cX, -cY, newZ);
+        // 向上浮起后的z值
+        const newZ = this.map!.object3d.position.z + map.depth / 4 / mapIndex;
+        const newCenter = new THREE.Vector3(cX, -cY, newZ + map.depth);
         this.world!.speed =
           level === 'country' ? 0.5 : level === 'province' ? 0.15 : 0.06;
         Materials.changeLineAnimateParams(new THREE.Vector2(cX, -cY), level);
@@ -228,10 +227,10 @@ export default class extends Base {
         const dest = new THREE.Vector3().lerpVectors(
           cameraPos,
           newCenter,
-          1 - scale - 0.04 / mapIndex
+          1 - scale
         );
         await Promise.all([
-          animation(control.target, newCenter.clone()),
+          animation(control.target, newCenter.setZ(newZ + map.depth / 2)),
           animation(camera.position, new THREE.Vector3(cX, dest.y, dest.z)),
         ]);
         await animation(map.object3d.position, {z: newZ});
@@ -393,6 +392,7 @@ export default class extends Base {
   }
 
   handleMouseMove(e: MouseEvent) {
+    if (this.isAnimating) return;
     this.trackMousePos(e);
     this.handlePopWindow();
   }
@@ -403,7 +403,7 @@ export default class extends Base {
       'mousemove',
       this.handleMouseMove.bind(this)
     );
-    this.addListener(this.container, 'dblclick', () => {
+    this.addListener(this.container, 'click', () => {
       const area = this.map!.pickArea(this.mouse);
       if (area && this.mapHistory.length < 3) {
         this.emit('adcodes', {

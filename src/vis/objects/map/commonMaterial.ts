@@ -1,3 +1,5 @@
+// 此材质配置仅供参考，需要根据实际项目效果进行调整
+
 import * as THREE from 'three';
 import {MeshLineMaterial} from '@q/pencil/dist/objects';
 
