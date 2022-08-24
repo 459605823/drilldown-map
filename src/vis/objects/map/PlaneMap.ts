@@ -3,9 +3,11 @@
 
 import {BaseObject} from '@q/pencil';
 import * as THREE from 'three';
-import type {MeshLineMaterial} from '@q/pencil/dist/objects';
+import {MeshLine, MeshLineMaterial} from '@q/pencil/dist/objects';
 import type {geoProjection} from 'd3-geo';
 import type {FeatureCollection, Polygon, MultiPolygon} from 'geojson';
+import {union} from '@turf/turf';
+import {mergeBufferGeometries} from 'three/examples/jsm/utils/BufferGeometryUtils';
 import {disposeMesh} from '@q/pencil/dist/utils';
 import {
   topMat,
@@ -180,6 +182,33 @@ export default class PlaneMap extends BaseObject {
         this.object3d.add(area);
       }
     });
+  }
+
+  createOutline() {
+    const {geojson, projection} = this.options;
+    // @ts-ignore
+    const outlineGeojson = geojson.features.slice(1).reduce((acc, item) => {
+      return union(acc, item);
+    }, geojson.features[0]);
+    const {coordinates} = outlineGeojson.geometry;
+    const coords = coordinates.map((coord) => coord[0] as [number, number][]);
+    const geos: THREE.BufferGeometry[] = [];
+    coords.forEach((coord) => {
+      const vertices: THREE.Vector3[] = [];
+      coord.forEach((position) => {
+        const [x, y] = projection(position as [number, number]) as [
+          number,
+          number
+        ];
+        vertices.push(new THREE.Vector3(x, -y, this.depth));
+      });
+      const line = new THREE.BufferGeometry().setFromPoints(vertices);
+      const meshline = new MeshLine();
+      meshline.setGeometry(line);
+      geos.push(meshline.geometry);
+    });
+    const line = new THREE.Mesh(mergeBufferGeometries(geos), this.lineMaterial);
+    this.object3d.add(line);
   }
 
   pickArea(mouse: THREE.Vector2) {

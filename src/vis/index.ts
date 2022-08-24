@@ -22,6 +22,13 @@ const projection = geoEquirectangular()
   .translate([0, 0])
   .precision(0.1);
 
+// const projection = geoEquirectangular()
+//   .center([30, 30])
+//   .scale(150)
+//   .translate([0, 0])
+//   .rotate([-160, 0])
+//   .precision(0.1);
+
 export default class extends Base {
   pencil?: Pencil;
 
