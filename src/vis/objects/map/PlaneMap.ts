@@ -338,11 +338,16 @@ export default class PlaneMap extends BaseObject {
     Array.from(this.areaMap.keys()).forEach((area) => {
       area.dispose();
     });
+    if (this.outline) {
+      disposeMesh(this.outline);
+    }
     this.oldArea = null;
     this.areaMap.clear();
     this.allAreas.length = 0;
     this.areaMaterials.length = 0;
     this.lineMaterial = null as unknown as any;
     this.raycaster = null as unknown as any;
+    this.outlineMaterial = undefined;
+    this.outline = undefined;
   }
 }
