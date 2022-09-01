@@ -103,6 +103,7 @@ export default class extends Base {
       projection,
       geojson: chinaGeojson as any,
       level: 'country',
+      outline: true,
     });
     map.object3d.position.setZ(9);
     this.map = map;
@@ -209,6 +210,7 @@ export default class extends Base {
           projection,
           geojson,
           level,
+          outline: true,
         });
         map.object3d.position.setZ(this.map!.object3d.position.z);
         const {size: preSize} = this.map!.getSize();
